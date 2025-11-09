@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 
 const port = 3000;
+const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
@@ -41,7 +42,8 @@ app.use(express.json());
 // };
 
 // mongodb
-const uri = `mongodb+srv://${process.env.USERNAME}:${process.env.USERPASS}@cluster0.0qspeye.mongodb.net/?appName=Cluster0`;
+const uri =
+  "mongodb+srv://travelEaseDB:LA3v9CTujTp0rLGS@cluster0.0qspeye.mongodb.net/?appName=Cluster0`";
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -62,6 +64,12 @@ async function run() {
     app.post("/vehicles", async (req, res) => {
       const newUserInfo = req.body;
       const result = await vehiclesCollection.insertOne(newUserInfo);
+      res.send(result);
+    });
+    // get vehicles
+    app.get("/vehicles", async (req, res) => {
+      const cursor = vehiclesCollection.find();
+      const result = await cursor.toArray();
       res.send(result);
     });
 
