@@ -7,7 +7,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 // const admin = require("firebase-admin");
 
@@ -59,6 +59,7 @@ async function run() {
     // do all crud operations here
     const travelsDB = client.db("travelsDB");
     const vehiclesCollection = travelsDB.collection("vehiclesCollection");
+    const bookingsCollection = travelsDB.collection("bookingsCollection");
 
     // vehicles collection related apis
     app.post("/vehicles", async (req, res) => {
@@ -66,9 +67,44 @@ async function run() {
       const result = await vehiclesCollection.insertOne(newUserInfo);
       res.send(result);
     });
+    // get vehicles by email
+    app.get("/vehicles", async (req, res) => {
+      const email = req.query.email;
+      console.log(email);
+      const query = {};
+      if (email) {
+        query.userEmail = email;
+      }
+      const cursor = vehiclesCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
     // get vehicles
     app.get("/vehicles", async (req, res) => {
       const cursor = vehiclesCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // get single data
+    app.get("/vehicles/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await vehiclesCollection.findOne(query);
+      res.send(result);
+    });
+
+    // booking related apis
+    // post bookings
+    app.post("/bookings", async (req, res) => {
+      const newUserInfo = req.body;
+      const result = await bookingsCollection.insertOne(newUserInfo);
+      res.send(result);
+    });
+
+    // get bookings
+    app.get("/bookings", async (req, res) => {
+      const cursor = bookingsCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
