@@ -106,6 +106,14 @@ async function run() {
       res.send(result);
     });
 
+    // delete data
+    app.delete("/vehicles/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await vehiclesCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // booking related apis
     // post bookings
     app.post("/bookings", async (req, res) => {
