@@ -9,37 +9,38 @@ dotenv.config();
 const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
-// const admin = require("firebase-admin");
+const admin = require("firebase-admin");
 
-// const serviceAccount = require("./firebase-admin-key.json");
+const serviceAccount = require("./firebase-admin-key.json");
 
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 // middle were
 app.use(cors());
 app.use(express.json());
 
-// const verifyFirebaseToken = async (req, res, next) => {
-//   const authorization = req.headers.authorization;
-//   if (!authorization) {
-//     return res.status(401).send({ message: "Unauthorize Access" });
-//   }
-//   const token = authorization.split(" ")[1];
-//   if (!token) {
-//     return res.status(401).send({ message: "Unauthorize Access" });
-//   }
+const verifyFirebaseToken = async (req, res, next) => {
+  const authorization = req.headers.authorization;
+  console.log(authorization);
+  if (!authorization) {
+    return res.status(401).send({ message: "Unauthorize Access" });
+  }
+  const token = authorization.split(" ")[1];
+  if (!token) {
+    return res.status(401).send({ message: "Unauthorize Access" });
+  }
 
-//   try {
-//     const decoded = await admin.auth().verifyIdToken(token);
-//     console.log("inside token", decoded);
-//     req.token_email = decoded.email;
-//     next();
-//   } catch {
-//     return res.status(401).send({ message: "Unauthorize Access" });
-//   }
-// };
+  try {
+    const decoded = await admin.auth().verifyIdToken(token);
+    console.log("inside token", decoded);
+    req.token_email = decoded.email;
+    next();
+  } catch {
+    return res.status(401).send({ message: "Unauthorize Access" });
+  }
+};
 
 // mongodb
 const uri =
@@ -62,7 +63,7 @@ async function run() {
     const bookingsCollection = travelsDB.collection("bookingsCollection");
 
     // vehicles collection related apis
-    app.post("/vehicles", async (req, res) => {
+    app.post("/vehicles", verifyFirebaseToken, async (req, res) => {
       const newUserInfo = req.body;
       const result = await vehiclesCollection.insertOne(newUserInfo);
       res.send(result);
@@ -87,7 +88,7 @@ async function run() {
     });
 
     // get single data
-    app.get("/vehicles/:id", async (req, res) => {
+    app.get("/vehicles/:id", verifyFirebaseToken, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await vehiclesCollection.findOne(query);
@@ -95,7 +96,7 @@ async function run() {
     });
 
     // updata data
-    app.put("/vehicles/:id", async (req, res) => {
+    app.put("/vehicles/:id", verifyFirebaseToken, async (req, res) => {
       const id = req.params.id;
       const updateData = req.body;
       const query = { _id: new ObjectId(id) };
@@ -107,7 +108,7 @@ async function run() {
     });
 
     // delete data
-    app.delete("/vehicles/:id", async (req, res) => {
+    app.delete("/vehicles/:id", verifyFirebaseToken, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await vehiclesCollection.deleteOne(query);
@@ -116,14 +117,14 @@ async function run() {
 
     // booking related apis
     // post bookings
-    app.post("/bookings", async (req, res) => {
+    app.post("/bookings", verifyFirebaseToken, async (req, res) => {
       const newUserInfo = req.body;
       const result = await bookingsCollection.insertOne(newUserInfo);
       res.send(result);
     });
 
     // get bookings
-    app.get("/bookings", async (req, res) => {
+    app.get("/bookings", verifyFirebaseToken, async (req, res) => {
       const cursor = bookingsCollection.find();
       const result = await cursor.toArray();
       res.send(result);
