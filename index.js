@@ -94,6 +94,18 @@ async function run() {
       res.send(result);
     });
 
+    // updata data
+    app.put("/vehicles/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: updateData,
+      };
+      const result = await vehiclesCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
     // booking related apis
     // post bookings
     app.post("/bookings", async (req, res) => {
