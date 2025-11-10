@@ -1,3 +1,5 @@
 node_modules
 .env
+B-12-A10-backup/
+B-12-A10_TravelEase-server/
 firebase-admin-key.json

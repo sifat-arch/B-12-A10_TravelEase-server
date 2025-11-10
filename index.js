@@ -18,7 +18,13 @@ admin.initializeApp({
 });
 
 // middle were
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
 app.use(express.json());
 
 const verifyFirebaseToken = async (req, res, next) => {
@@ -71,19 +77,19 @@ async function run() {
     // get vehicles by email
     app.get("/vehicles", async (req, res) => {
       const email = req.query.email;
-      console.log(email);
+
       const query = {};
       if (email) {
         query.userEmail = email;
       }
-      const cursor = vehiclesCollection.find(query);
+      const cursor = vehiclesCollection.find(query).sort({ pricePerDay: -1 });
       const result = await cursor.toArray();
       res.send(result);
     });
     // get vehicles
     app.get("/vehicles", async (req, res) => {
       const cursor = vehiclesCollection.find();
-      const result = await cursor.toArray();
+      const result = await cursor.toArray().sort({ pricePerDay: -1 });
       res.send(result);
     });
 
@@ -125,7 +131,7 @@ async function run() {
 
     // get bookings
     app.get("/bookings", verifyFirebaseToken, async (req, res) => {
-      const cursor = bookingsCollection.find();
+      const cursor = bookingsCollection.find().sort({ pricePerDay: -1 });
       const result = await cursor.toArray();
       res.send(result);
     });
