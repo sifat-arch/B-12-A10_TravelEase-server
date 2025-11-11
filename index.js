@@ -93,6 +93,13 @@ async function run() {
       res.send(result);
     });
 
+    // get latest 6 data
+    app.get("/vehicles", async (req, res) => {
+      const cursor = vehiclesCollection.find();
+      const result = await cursor.toArray().sort({ pricePerDay: -1 });
+      res.send(result);
+    });
+
     // get single data
     app.get("/vehicles/:id", verifyFirebaseToken, async (req, res) => {
       const id = req.params.id;
