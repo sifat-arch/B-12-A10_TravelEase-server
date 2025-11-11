@@ -94,9 +94,9 @@ async function run() {
     });
 
     // get latest 6 data
-    app.get("/vehicles", async (req, res) => {
-      const cursor = vehiclesCollection.find();
-      const result = await cursor.toArray().sort({ pricePerDay: -1 });
+    app.get("/vehicles-latest", async (req, res) => {
+      const cursor = vehiclesCollection.find().sort({ createdAt: 1 }).limit(6);
+      const result = await cursor.toArray();
       res.send(result);
     });
 
