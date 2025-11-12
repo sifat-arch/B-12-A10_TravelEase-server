@@ -18,13 +18,7 @@ admin.initializeApp({
 });
 
 // middle were
-app.use(
-  cors({
-    origin: "*",
-    allowedHeaders: ["Content-Type", "Authorization"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
-);
+app.use(cors());
 app.use(express.json());
 
 const verifyFirebaseToken = async (req, res, next) => {
@@ -60,7 +54,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
     // do all crud operations here
     const travelsDB = client.db("travelsDB");
     const vehiclesCollection = travelsDB.collection("vehiclesCollection");
@@ -143,7 +137,7 @@ async function run() {
       res.send(result);
     });
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
