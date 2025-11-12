@@ -138,7 +138,9 @@ async function run() {
 
     // get bookings
     app.get("/bookings", verifyFirebaseToken, async (req, res) => {
-      const cursor = bookingsCollection.find().sort({ pricePerDay: -1 });
+      const email = req.query.email;
+      const query = { bookedBy: email };
+      const cursor = bookingsCollection.find(query).sort({ pricePerDay: -1 });
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -159,6 +161,3 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running to the port:${port}`);
 });
-
-// user-travelEaseDB
-// psss-LA3v9CTujTp0rLGS
