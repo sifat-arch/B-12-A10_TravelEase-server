@@ -29,7 +29,6 @@ app.use(express.json());
 
 const verifyFirebaseToken = async (req, res, next) => {
   const authorization = req.headers.authorization;
-  console.log(authorization);
   if (!authorization) {
     return res.status(401).send({ message: "Unauthorize Access" });
   }
@@ -49,8 +48,7 @@ const verifyFirebaseToken = async (req, res, next) => {
 };
 
 // mongodb
-const uri =
-  "mongodb+srv://travelEaseDB:LA3v9CTujTp0rLGS@cluster0.0qspeye.mongodb.net/?appName=Cluster0`";
+const uri = `mongodb+srv://${process.env.DB_USRENAME}:${process.env.DB_PASSWORD}@cluster0.0qspeye.mongodb.net/?appName=Cluster0`;
 
 const client = new MongoClient(uri, {
   serverApi: {
